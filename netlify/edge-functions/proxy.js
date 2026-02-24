@@ -1,6 +1,12 @@
 export default async (request) => {
   const url = new URL(request.url);
-  const targetUrl = 'https://cloud-api.yandex.net/v1/disk' + url.pathname.replace(/^\/disk/, '') + url.search;
+  
+  // Убираем префикс /disk из пути запроса
+  // Например, если запрос пришёл на /disk/v1/disk, останется /v1/disk
+  const path = url.pathname.replace(/^\/disk/, '') || '/';
+  
+  // Формируем правильный URL для Яндекс.Диска
+  const targetUrl = 'https://cloud-api.yandex.net' + path + url.search;
 
   const response = await fetch(targetUrl, {
     method: request.method,
@@ -14,8 +20,4 @@ export default async (request) => {
   newResponse.headers.set('Access-Control-Allow-Headers', 'Authorization, Content-Type');
 
   return newResponse;
-};
-
-export const config = {
-  path: "/disk/*"
 };
