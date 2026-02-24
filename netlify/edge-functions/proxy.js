@@ -5,15 +5,18 @@ export default async (request) => {
   const path = url.pathname.replace(/^\/disk/, '') || '/';
   const targetUrl = 'https://cloud-api.yandex.net' + path + url.search;
 
-  // Возвращаем отладочную информацию вместо запроса к API
-  return new Response(JSON.stringify({
-    receivedPath: url.pathname,
-    processedPath: path,
-    targetUrl: targetUrl,
-    message: "Это отладочный ответ. Прокси работает, но сейчас возвращает эту информацию вместо запроса к API."
-  }), {
-    headers: { 'Content-Type': 'application/json' }
+  const response = await fetch(targetUrl, {
+    method: request.method,
+    headers: request.headers,
+    body: request.body,
   });
+
+  const newResponse = new Response(response.body, response);
+  newResponse.headers.set('Access-Control-Allow-Origin', '*');
+  newResponse.headers.set('Access-Control-Allow-Methods', 'GET, PUT, DELETE, OPTIONS');
+  newResponse.headers.set('Access-Control-Allow-Headers', 'Authorization, Content-Type');
+
+  return newResponse;
 };
 
 export const config = {
