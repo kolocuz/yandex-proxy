@@ -1,6 +1,6 @@
 const allowedOrigins = [
   'http://localhost:3000',
-  'https://your-site.netlify.app'
+  'https://kolocuz.github.io'
 ];
 
 exports.handler = async (event) => {
@@ -41,11 +41,15 @@ exports.handler = async (event) => {
     });
 
     const body = await response.text();
+
+    const cacheControl = response.headers.get('cache-control') || 'public, max-age=60';
+
     return {
       statusCode: response.status,
       headers: {
         ...headers,
         'Content-Type': response.headers.get('content-type') || 'application/octet-stream',
+        'Cache-Control': cacheControl,
       },
       body,
     };
