@@ -1,0 +1,11 @@
+{
+  "name": "yandex-proxy-main",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "@vercel/blob": "^1.1.1"
+  }
+}
