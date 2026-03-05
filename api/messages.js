@@ -1,7 +1,7 @@
 import { put } from '@vercel/blob';
 
 export default async function handler(request, response) {
-  // CORS
+  // CORS для вашего GitHub Pages сайта
   response.setHeader('Access-Control-Allow-Origin', 'https://kolocuz.github.io');
   response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   response.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -18,6 +18,9 @@ export default async function handler(request, response) {
   const safeSeed = seed.replace(/[^a-zA-Z0-9]/g, '_');
   const BLOB_PATH = `chats/${safeSeed}.json`;
   const BLOB_PUBLIC_URL = 'https://lfgf4utzuaubrsto.public.blob.vercel-storage.com';
+  
+  // ✅ ТОКЕН ЯВНО УКАЗАН (ваш токен)
+  const BLOB_TOKEN = 'vercel_blob_rw_LfGF4UTZuaUbRsTo_zbwq4kqa8LtFGMViQ5mROHs4tTqhCu';
 
   console.log(`[${request.method}] Request for seed: ${seed}`);
 
@@ -87,13 +90,14 @@ export default async function handler(request, response) {
         console.log(`POST: Trimmed to last 1000 messages`);
       }
 
-      // Сохраняем в Blob
+      // ✅ СОХРАНЯЕМ С ЯВНО УКАЗАННЫМ ТОКЕНОМ
       try {
         console.log(`POST: Attempting to save to Blob at path: ${BLOB_PATH}`);
         const { url } = await put(BLOB_PATH, JSON.stringify(messages), {
           access: 'public',
           contentType: 'application/json',
           addRandomSuffix: false,
+          token: BLOB_TOKEN // 👈 ЯВНО ПЕРЕДАЁМ ТОКЕН
         });
         console.log(`POST: Save successful! Blob URL: ${url}`);
 
@@ -106,7 +110,8 @@ export default async function handler(request, response) {
         console.error('POST: Fatal error during put operation:', putError);
         return response.status(500).json({ 
           error: 'Failed to save to Blob',
-          details: putError.message 
+          details: putError.message,
+          stack: putError.stack
         });
       }
     }
